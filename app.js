@@ -1,13 +1,10 @@
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
+app.use(morgan('dev'));
+const rotaUsuarios = require('./routes/rotaUsuario');
+app.use("/usuario",rotaUsuarios);
 
-app.use("/listausuarios",(req,res,next)=>{
- 
-      res.status(200).send({
-        mensagem:"aqui é a lista de usuários!!!!",
-        nome:"carlos"
-      })
-});
 app.use((req,res,next)=>{
       const erro = new Error("Não encontrado!");
       erro.status(404);
