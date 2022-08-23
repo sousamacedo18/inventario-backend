@@ -1,9 +1,14 @@
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
+const bodyParser = require('body-parser');
 app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
 const rotaUsuarios = require('./routes/rotaUsuario');
+
 app.use("/usuario",rotaUsuarios);
+
 
 app.use((req,res,next)=>{
       const erro = new Error("Não encontrado!");
