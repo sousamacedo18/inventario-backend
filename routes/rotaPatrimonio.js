@@ -47,7 +47,7 @@ router.get('/',(req,res,next)=>{
        
     res.status(200).send({
         mensagem:"aqui é a lista de patrimônio!!!!",
-        usuario:patrimonio
+        patrimonio:patrimonio
       })
 })
 //para consultar um determinado cadastro
@@ -56,7 +56,7 @@ router.get('/:id',(req,res,next)=>{
     let listapatrimonio=patrimonio.filter(value=>value.id==id);
     res.status(200).send({
         mensagem:`aqui é a lista de um patrimônio com id:${id}`,
-        usuario:listapatrimonio
+        patrimonio:listapatrimonio
       })
 })
 // para enviar dados para salvar no banco
