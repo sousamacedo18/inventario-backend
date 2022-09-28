@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mysql = require("../mysql").pool;
 let usuario=
 [
   {
@@ -65,21 +66,50 @@ function validacaoEmail(email) {
 
 //para consultar todos os dados
 router.get('/',(req,res,next)=>{
-       
-    res.status(200).send({
-        mensagem:"aqui é a lista de usuários!!!!",
-        usuario:usuario
-       // usuario:usuario[1].nome
-      })
+     mysql.getConnection((error,conn)=>{
+        conn.query(
+          "SELECT * FROM `usuario` ",
+          (error,resultado,field)=>{
+            conn.release();
+            if(error){
+             return res.status(500).send({
+                error:error,
+                response:null
+              })
+            }
+            res.status(200).send({
+              mensagem:"aqui é a lista de usuários!!!!",
+              usuario:resultado
+            
+            })
+          }
+          )
+     })  
+
 })
 //para consultar um determinado cadastro
 router.get('/:id',(req,res,next)=>{
     const id = req.params.id;
-    let listausuario=usuario.filter(value=>value.id==id);
-    res.status(200).send({
-        mensagem:`aqui é a lista de um usuário com id:${id}`,
-        usuario:listausuario
-      })
+    mysql.getConnection((error,conn)=>{
+      conn.query(
+        "SELECT * FROM `usuario` where id=?",[id],
+        (error,resultado,field)=>{
+          conn.release();
+          if(error){
+           return res.status(500).send({
+              error:error,
+              response:null
+            })
+          }
+          res.status(200).send({
+            mensagem:"aqui é a lista de usuários!!!!",
+            usuario:resultado
+          
+          })
+        }
+        )
+   })  
+
 })
 // para enviar dados para salvar no banco
 router.post('/',(req,res,next)=>{
@@ -106,20 +136,29 @@ router.post('/',(req,res,next)=>{
               i++;                
             }  
         if(i==0){
-                    res.status(201).send({
-                    mensagem:"Dados Inseridos!",
-                    usuarioCriado:usuario 
-                     });        
-        }else{
-                    res.status(400).send({
-                    mensagem:msg,  
-              }) 
-        }
-            
-        }
-      
-      
-);
+          mysql.getConnection((error,conn)=>{
+            conn.query(
+              "INSERT INTO `usuario`(nome,email,senha) values(?,?,?)",
+              [usuario.nome,usuario.email,usuario.senha],
+              (error,resultado,field)=>{
+                conn.release();
+                if(error){
+                 return res.status(500).send({
+                    error:error,
+                    response:null
+                  })
+                }
+                res.status(201).send({
+                  mensagem:"Cadastro criado sucesso!!!!",
+                  usuario:resultado.insertId
+                
+                })
+               }
+              )
+            }) 
+          }    
+       }    
+     );
 
 router.patch('/',(req,res,next)=>{
      let msg=[];
@@ -151,11 +190,25 @@ router.patch('/',(req,res,next)=>{
       i++;                
     }  
 if(i==0){
-            res.status(201).send({
-            mensagem:"Dados Alterados!",
-            dados:usuario
-           
-             });        
+  mysql.getConnection((error,conn)=>{
+    conn.query(
+      "update usuario set nome=?,email=?,senha=? where id=?",
+      [nome,email,senha,id],
+      (error,resultado,field)=>{
+        conn.release();
+        if(error){
+         return res.status(500).send({
+            error:error,
+            response:null
+          })
+        }
+        res.status(201).send({
+          mensagem:"Cadastro alterado com sucesso!!!!",
+        
+        })
+       }
+      )
+    })        
 }else{
             res.status(400).send({
             mensagem:msg,  
@@ -166,13 +219,27 @@ if(i==0){
 })
 router.delete('/:id',(req,res,next)=>{
   const {id} = req.params;
-  let dadosdeletados=usuario.filter(value=>value.id==id);
-  let listausuario=usuario.filter(value=>value.id!=id);
-  res.status(201).send({
-    mensagem:"Dados deletados com sucesso",
-    dadosnovos:listausuario,
-    deletados:dadosdeletados
-  })
+  // let dadosdeletados=usuario.filter(value=>value.id==id);
+  // let listausuario=usuario.filter(value=>value.id!=id);
+  mysql.getConnection((error,conn)=>{
+    conn.query(
+      `DELETE FROM usuario WHERE id=${id}`,
+      (error,resultado,field)=>{
+        conn.release();
+        if(error){
+         return res.status(500).send({
+            error:error,
+            response:null
+          })
+        }
+        res.status(200).send({
+          mensagem:"cadastro deletado com sucesso!!!!",
+      
+        
+        })
+      }
+      )
+ }) 
 })
 module.exports = router;
 
