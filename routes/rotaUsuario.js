@@ -113,6 +113,7 @@ router.get('/:id',(req,res,next)=>{
 })
 // para enviar dados para salvar no banco
 router.post('/',(req,res,next)=>{
+
       let msg=[];
       let i=0;
           
@@ -143,6 +144,7 @@ router.post('/',(req,res,next)=>{
               (error,resultado,field)=>{
                 conn.release();
                 if(error){
+                  console.log("passei aqui")
                  return res.status(500).send({
                     error:error,
                     response:null
