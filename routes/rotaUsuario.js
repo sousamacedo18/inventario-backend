@@ -110,6 +110,31 @@ router.get('/:id',(req,res,next)=>{
         )
    })  
 
+});
+
+router.post('/logar',(req,res,next)=>{
+     const{email,senha}=req.body;
+     mysql.getConnection((error,conn)=>{
+      conn.query(
+        "SELECT * FROM usuario where email like ? and senha like ?",
+        [email,senha],
+        (error,resultado,field)=>{
+          conn.release();
+          if(error){
+           return res.status(500).send({
+              error:error,
+              response:null
+            })
+          }
+          res.status(200).send({
+            mensagem:"Dados do Usuário!!!!",
+            usuario:resultado
+          
+          })
+         }
+        )
+      })
+
 })
 // para enviar dados para salvar no banco
 router.post('/',(req,res,next)=>{
