@@ -26,7 +26,7 @@ router.get('/',(req,res,next)=>{
        
     res.status(200).send({
         mensagem:"aqui é a lista de setor!!!!",
-        setor:setore
+        setor:setor
       })
 })
 //para consultar um determinado cadastro
